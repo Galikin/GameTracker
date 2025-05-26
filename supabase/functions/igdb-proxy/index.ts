@@ -45,6 +45,10 @@ serve(async (req) => {
       body: query
     })
 
+    if (!response.ok) {
+      throw new Error(`IGDB API error: ${response.status} ${response.statusText}`)
+    }
+
     const data = await response.json()
 
     return new Response(JSON.stringify(data), {
@@ -54,6 +58,7 @@ serve(async (req) => {
       }
     })
   } catch (error) {
+    console.error('Error in Edge Function:', error)
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: {

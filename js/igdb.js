@@ -32,7 +32,7 @@ async function searchGames(query) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                query: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
+                query: `fields name,cover.url,genres.name,platforms.name; search "${query}"; limit 5;`
             })
         });
         
@@ -57,7 +57,7 @@ async function getGameDetails(gameId) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                query: `where id = ${gameId}; fields name,cover.url,genres.name,platforms.name,summary;`
+                query: `fields name,cover.url,genres.name,platforms.name,summary; where id = ${gameId};`
             })
         });
         
