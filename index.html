@@ -340,14 +340,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase.min.js"></script>
     <script>
         // Supabase configuration - Replace with your own values
-        const SUPABASE_URL = 'https://mnbtdwksrwhboyfrkxqf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYnRkd2tzcndoYm95ZnJreHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMjAzNDAsImV4cCI6MjA2Mzc5NjM0MH0.kdKVhO7N3ecPgu4nOakQ98J2hMHi1lGgP9rcII4DCH8';
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
         
         // Initialize Supabase client (will be null until you add your credentials)
         let supabase = null;
         
         // Check if Supabase is configured
-        const isSupabaseConfigured = SUPABASE_URL !== 'https://mnbtdwksrwhboyfrkxqf.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYnRkd2tzcndoYm95ZnJreHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMjAzNDAsImV4cCI6MjA2Mzc5NjM0MH0.kdKVhO7N3ecPgu4nOakQ98J2hMHi1lGgP9rcII4DCH8';
+        const isSupabaseConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE';
         
         if (isSupabaseConfigured) {
             supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
