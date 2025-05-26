@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming Collection Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .add-game-form {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .filters {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .game-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 2px;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .platform-tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .status-completed { background: #4CAF50; color: white; }
+        .status-playing { background: #FF9800; color: white; }
+        .status-backlog { background: #9E9E9E; color: white; }
+        .status-wishlist { background: #E91E63; color: white; }
+
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 50px;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Gaming Collection Tracker</h1>
+            <p>Keep track of your gaming adventures</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalGames">0</div>
+                <div>Total Games</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="completedGames">0</div>
+                <div>Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="currentlyPlaying">0</div>
+                <div>Currently Playing</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="backlogCount">0</div>
+                <div>Backlog</div>
+            </div>
+        </div>
+
+        <div class="add-game-form">
+            <h2 style="margin-bottom: 20px; color: #333;">Add New Game</h2>
+            <form id="gameForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="gameTitle">Game Title</label>
+                        <input type="text" id="gameTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="platform">Platform</label>
+                        <select id="platform" required>
+                            <option value="">Select Platform</option>
+                            <option value="PC">PC</option>
+                            <option value="PlayStation 5">PlayStation 5</option>
+                            <option value="PlayStation 4">PlayStation 4</option>
+                            <option value="Xbox Series X/S">Xbox Series X/S</option>
+                            <option value="Xbox One">Xbox One</option>
+                            <option value="Nintendo Switch">Nintendo Switch</option>
+                            <option value="Mobile">Mobile</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="genre">Genre</label>
+                        <input type="text" id="genre" placeholder="e.g., RPG, Action, Strategy">
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" required>
+                            <option value="wishlist">Wishlist</option>
+                            <option value="backlog">Backlog</option>
+                            <option value="playing">Currently Playing</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rating">Rating (1-10)</label>
+                        <input type="number" id="rating" min="1" max="10" placeholder="Optional">
+                    </div>
+                    <div class="form-group">
+                        <label for="hoursPlayed">Hours Played</label>
+                        <input type="number" id="hoursPlayed" min="0" placeholder="Optional">
+                    </div>
+                </div>
+                <button type="submit" class="btn">Add Game</button>
+            </form>
+        </div>
+
+        <div class="filters">
+            <label for="filterPlatform">Filter by Platform:</label>
+            <select id="filterPlatform">
+                <option value="">All Platforms</option>
+            </select>
+            
+            <label for="filterStatus">Filter by Status:</label>
+            <select id="filterStatus">
+                <option value="">All Status</option>
+                <option value="wishlist">Wishlist</option>
+                <option value="backlog">Backlog</option>
+                <option value="playing">Currently Playing</option>
+                <option value="completed">Completed</option>
+            </select>
+
+            <input type="text" id="searchGames" placeholder="Search games..." style="flex: 1; min-width: 200px;">
+        </div>
+
+        <div id="gamesContainer" class="games-grid"></div>
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <p>No games in your collection yet. Add your first game above!</p>
+        </div>
+    </div>
+
+    <script>
+        let games = [];
+        let filteredGames = [];
+
+        // Load games from memory on page load
+        function loadGames() {
+            // In a real app, this would load from a database
+            // For now, games will persist only during the session
+            updateDisplay();
+        }
+
+        // Save game to collection
+        function saveGame(gameData) {
+            games.push({
+                ...gameData,
+                id: Date.now(),
+                dateAdded: new Date().toLocaleDateString()
+            });
+            updateDisplay();
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = games.length;
+            const completed = games.filter(g => g.status === 'completed').length;
+            const playing = games.filter(g => g.status === 'playing').length;
+            const backlog = games.filter(g => g.status === 'backlog').length;
+
+            document.getElementById('totalGames').textContent = total;
+            document.getElementById('completedGames').textContent = completed;
+            document.getElementById('currentlyPlaying').textContent = playing;
+            document.getElementById('backlogCount').textContent = backlog;
+        }
+
+        // Update platform filter options
+        function updatePlatformFilter() {
+            const platforms = [...new Set(games.map(g => g.platform))];
+            const filterSelect = document.getElementById('filterPlatform');
+            
+            // Clear existing options except "All Platforms"
+            filterSelect.innerHTML = '<option value="">All Platforms</option>';
+            
+            platforms.forEach(platform => {
+                const option = document.createElement('option');
+                option.value = platform;
+                option.textContent = platform;
+                filterSelect.appendChild(option);
+            });
+        }
+
+        // Filter and search games
+        function filterGames() {
+            const platformFilter = document.getElementById('filterPlatform').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const searchTerm = document.getElementById('searchGames').value.toLowerCase();
+
+            filteredGames = games.filter(game => {
+                const matchesPlatform = !platformFilter || game.platform === platformFilter;
+                const matchesStatus = !statusFilter || game.status === statusFilter;
+                const matchesSearch = !searchTerm || 
+                    game.title.toLowerCase().includes(searchTerm) ||
+                    game.genre.toLowerCase().includes(searchTerm);
+
+                return matchesPlatform && matchesStatus && matchesSearch;
+            });
+
+            displayGames();
+        }
+
+        // Display games
+        function displayGames() {
+            const container = document.getElementById('gamesContainer');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredGames.length === 0) {
+                container.style.display = 'none';
+                emptyState.style.display = 'block';
+                emptyState.innerHTML = games.length === 0 ? 
+                    '<p>No games in your collection yet. Add your first game above!</p>' :
+                    '<p>No games match your current filters.</p>';
+                return;
+            }
+
+            container.style.display = 'grid';
+            emptyState.style.display = 'none';
+
+            container.innerHTML = filteredGames.map(game => `
+                <div class="game-card">
+                    <div class="status-badge status-${game.status}">${game.status.charAt(0).toUpperCase() + game.status.slice(1)}</div>
+                    <div class="platform-tag">${game.platform}</div>
+                    <div class="game-title">${game.title}</div>
+                    <div class="game-info">
+                        <div class="info-item">
+                            <div class="info-label">Genre</div>
+                            <div class="info-value">${game.genre || 'Not specified'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Rating</div>
+                            <div class="info-value">${game.rating ? game.rating + '/10' : 'Not rated'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Hours Played</div>
+                            <div class="info-value">${game.hoursPlayed || 0}h</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Date Added</div>
+                            <div class="info-value">${game.dateAdded}</div>
+                        </div>
+                    </div>
+                    <button class="delete-btn" onclick="deleteGame(${game.id})">Delete</button>
+                </div>
+            `).join('');
+        }
+
+        // Delete game
+        function deleteGame(id) {
+            if (confirm('Are you sure you want to delete this game?')) {
+                games = games.filter(game => game.id !== id);
+                updateDisplay();
+            }
+        }
+
+        // Update entire display
+        function updateDisplay() {
+            updateStats();
+            updatePlatformFilter();
+            filterGames();
+        }
+
+        // Form submission
+        document.getElementById('gameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const gameData = {
+                title: document.getElementById('gameTitle').value,
+                platform: document.getElementById('platform').value,
+                genre: document.getElementById('genre').value,
+                status: document.getElementById('status').value,
+                rating: document.getElementById('rating').value || null,
+                hoursPlayed: document.getElementById('hoursPlayed').value || 0
+            };
+
+            saveGame(gameData);
+            this.reset();
+        });
+
+        // Filter event listeners
+        document.getElementById('filterPlatform').addEventListener('change', filterGames);
+        document.getElementById('filterStatus').addEventListener('change', filterGames);
+        document.getElementById('searchGames').addEventListener('input', filterGames);
+
+        // Initialize app
+        loadGames();
+    </script>
+</body>
+</html>
