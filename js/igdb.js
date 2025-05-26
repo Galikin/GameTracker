@@ -33,7 +33,6 @@ async function searchGames(query) {
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
-                endpoint: 'games',
                 query: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
             })
         });
@@ -54,7 +53,6 @@ async function getGameDetails(gameId) {
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
-                endpoint: 'games',
                 query: `where id = ${gameId}; fields name,cover.url,genres.name,platforms.name,summary;`
             })
         });

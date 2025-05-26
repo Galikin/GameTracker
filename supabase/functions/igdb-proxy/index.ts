@@ -32,10 +32,10 @@ serve(async (req) => {
   }
 
   try {
-    const { query } = await req.json()
+    const { query, endpoint = 'games' } = await req.json()
     const accessToken = await getAccessToken()
 
-    const response = await fetch('https://api.igdb.com/v4/games', {
+    const response = await fetch(`https://api.igdb.com/v4/${endpoint}`, {
       method: 'POST',
       headers: {
         'Client-ID': IGDB_CLIENT_ID,
