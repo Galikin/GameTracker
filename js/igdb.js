@@ -106,7 +106,7 @@ function initializeGameSearch() {
 
             dropdown.innerHTML = games.map(game => `
                 <div class="autocomplete-item" data-game-id="${game.id}">
-                    <img src="${game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.url.split('/').pop()}` : 'placeholder.jpg'}" 
+                    <img src="${game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.url.split('/').pop()}` : 'img/placeholder.jpg'}" 
                          alt="${game.name}" 
                          style="width: 40px; height: 40px; object-fit: cover;">
                     <span>${game.name}</span>
@@ -184,4 +184,4 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeGameSearch); 
+document.addEventListener('DOMContentLoaded', initializeGameSearch);

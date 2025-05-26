@@ -87,7 +87,7 @@ async function saveGame(gameData) {
         const localGame = {
             ...gameData,
             id: Date.now(),
-            dateAdded: new Date().toLocaleDateString(),
+            date_added: new Date().toLocaleDateString(),
             created_at: new Date().toISOString()
         };
         games.unshift(localGame);
@@ -171,8 +171,8 @@ function displayGames() {
         <div class="game-card">
             <div class="status-badge status-${game.status}">${game.status.charAt(0).toUpperCase() + game.status.slice(1)}</div>
             ${game.cover_url ? 
-                `<img src="${game.cover_url}" alt="${game.title}" class="game-cover" onerror="this.src='placeholder.jpg'">` : 
-                '<img src="placeholder.jpg" alt="No cover" class="game-cover">'}
+                `<img src="${game.cover_url}" alt="${game.title}" class="game-cover" onerror="this.src='img/placeholder.jpg'">` : 
+                '<img src="img/placeholder.jpg" alt="No cover" class="game-cover">'}
             <div class="platform-tag">${game.platform}</div>
             <div class="game-title">${game.title}</div>
             <div class="game-info">
@@ -190,7 +190,7 @@ function displayGames() {
                 </div>
                 <div class="info-item">
                     <div class="info-label">Date Added</div>
-                    <div class="info-value">${game.dateAdded}</div>
+                    <div class="info-value">${game.date_added}</div>
                 </div>
             </div>
             <button class="delete-btn" onclick="deleteGame(${game.id})">Delete</button>
@@ -253,4 +253,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Load initial data
     loadGames();
-}); 
+});
