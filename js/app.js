@@ -102,7 +102,7 @@ function updateStats() {
     document.getElementById('totalGames').textContent = total;
     document.getElementById('completedGames').textContent = completed;
     document.getElementById('currentlyPlaying').textContent = playing;
-    document.getElementById('backlogCount').textContent = backlog;
+    document.getElementById('backlogCount').textContent = owned;
 }
 
 // Update platform filter options

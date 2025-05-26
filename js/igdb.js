@@ -24,26 +24,20 @@ async function getAccessToken() {
     }
 }
 
-// Initialize IGDB client with access token
-async function initializeIGDB() {
-    const accessToken = await getAccessToken();
-    if (!accessToken) {
-        console.error('Failed to get access token');
-        return;
-    }
-    window.igdb = new IGDBClient(IGDB_CLIENT_ID, accessToken);
-    initializeGameSearch();
-}
-
 // Search games function
 async function searchGames(query) {
     try {
-        const response = await window.igdb.games({
-            search: query,
-            fields: ['name', 'cover.url', 'genres.name', 'platforms.name'],
-            limit: 5
+        const accessToken = await getAccessToken();
+        const response = await fetch('https://api.igdb.com/v4/games', {
+            method: 'POST',
+            headers: {
+                'Client-ID': IGDB_CLIENT_ID,
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
         });
-        return response;
+        return await response.json();
     } catch (error) {
         console.error('Error searching IGDB:', error);
         return [];
@@ -53,11 +47,18 @@ async function searchGames(query) {
 // Get game details function
 async function getGameDetails(gameId) {
     try {
-        const response = await window.igdb.games({
-            ids: [gameId],
-            fields: ['name', 'cover.url', 'genres.name', 'platforms.name', 'summary']
+        const accessToken = await getAccessToken();
+        const response = await fetch('https://api.igdb.com/v4/games', {
+            method: 'POST',
+            headers: {
+                'Client-ID': IGDB_CLIENT_ID,
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: `where id = ${gameId}; fields name,cover.url,genres.name,platforms.name,summary;`
         });
-        return response[0];
+        const data = await response.json();
+        return data[0];
     } catch (error) {
         console.error('Error fetching game details:', error);
         return null;
@@ -166,4 +167,4 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeIGDB); 
+document.addEventListener('DOMContentLoaded', initializeGameSearch); 
