@@ -96,7 +96,7 @@ function updateStats() {
     const total = games.length;
     const completed = games.filter(g => g.status === 'completed').length;
     const playing = games.filter(g => g.status === 'playing').length;
-    const backlog = games.filter(g => g.status === 'backlog').length;
+    const owned = games.filter(g => g.status === 'owned').length;
 
     document.getElementById('totalGames').textContent = total;
     document.getElementById('completedGames').textContent = completed;
