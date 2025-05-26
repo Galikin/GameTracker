@@ -55,6 +55,7 @@ async function saveGame(gameData) {
             status: gameData.status,
             rating: gameData.rating || null,
             hours_played: gameData.hoursPlayed || 0,
+            cover_url: gameData.cover_url || null,
             date_added: new Date().toLocaleDateString(),
             created_at: new Date().toISOString()
         };
@@ -159,6 +160,7 @@ function displayGames() {
     container.innerHTML = filteredGames.map(game => `
         <div class="game-card">
             <div class="status-badge status-${game.status}">${game.status.charAt(0).toUpperCase() + game.status.slice(1)}</div>
+            ${game.cover_url ? `<img src="${game.cover_url}" alt="${game.title}" class="game-cover">` : ''}
             <div class="platform-tag">${game.platform}</div>
             <div class="game-title">${game.title}</div>
             <div class="game-info">
