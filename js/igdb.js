@@ -27,15 +27,15 @@ async function getAccessToken() {
 // Search games function
 async function searchGames(query) {
     try {
-        const accessToken = await getAccessToken();
-        const response = await fetch('https://api.igdb.com/v4/games', {
+        const response = await fetch('https://mnbtdwksrwhboyfrkxqf.supabase.co/functions/v1/igdb-proxy', {
             method: 'POST',
             headers: {
-                'Client-ID': IGDB_CLIENT_ID,
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
-            body: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
+            body: JSON.stringify({
+                query: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
+            })
         });
         return await response.json();
     } catch (error) {
@@ -47,15 +47,15 @@ async function searchGames(query) {
 // Get game details function
 async function getGameDetails(gameId) {
     try {
-        const accessToken = await getAccessToken();
-        const response = await fetch('https://api.igdb.com/v4/games', {
+        const response = await fetch('https://mnbtdwksrwhboyfrkxqf.supabase.co/functions/v1/igdb-proxy', {
             method: 'POST',
             headers: {
-                'Client-ID': IGDB_CLIENT_ID,
-                'Authorization': `Bearer ${accessToken}`,
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
-            body: `where id = ${gameId}; fields name,cover.url,genres.name,platforms.name,summary;`
+            body: JSON.stringify({
+                query: `where id = ${gameId}; fields name,cover.url,genres.name,platforms.name,summary;`
+            })
         });
         const data = await response.json();
         return data[0];
