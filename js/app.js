@@ -102,7 +102,7 @@ function updateStats() {
     document.getElementById('totalGames').textContent = total;
     document.getElementById('completedGames').textContent = completed;
     document.getElementById('currentlyPlaying').textContent = playing;
-    document.getElementById('backlogCount').textContent = owned;
+    document.getElementById('ownedCount').textContent = owned;
 }
 
 // Update platform filter options
@@ -202,6 +202,7 @@ async function deleteGame(id) {
             
             console.log('Game deleted from Supabase');
             games = games.filter(game => game.id !== id);
+            saveToLocalStorage(); // Update localStorage after deletion
             updateDisplay();
         } catch (error) {
             console.error('Error in deleteGame:', error);
