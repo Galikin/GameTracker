@@ -1,6 +1,5 @@
 // IGDB API configuration
-const IGDB_CLIENT_ID = '3h4ewrzdst7vrv3ul4bfk5j3j6knej';
-const IGDB_CLIENT_SECRET = '3blyx761rigtlqk9i1tmhjer5oh703';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYnRkd2tzcndoYm95ZnJreHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk5MjQ5NzAsImV4cCI6MjA1NTUwMDk3MH0.8QJ5QJ5QJ5QJ5QJ5QJ5QJ5QJ5QJ5QJ5QJ5QJ5QJ5QJ5Q';
 
 // Function to get access token
 async function getAccessToken() {
@@ -34,6 +33,7 @@ async function searchGames(query) {
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
+                endpoint: 'games',
                 query: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
             })
         });
@@ -54,6 +54,7 @@ async function getGameDetails(gameId) {
                 'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
+                endpoint: 'games',
                 query: `where id = ${gameId}; fields name,cover.url,genres.name,platforms.name,summary;`
             })
         });
