@@ -36,7 +36,8 @@ async function searchGames(query) {
                 query: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
             })
         });
-        return await response.json();
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
     } catch (error) {
         console.error('Error searching IGDB:', error);
         return [];
@@ -57,7 +58,7 @@ async function getGameDetails(gameId) {
             })
         });
         const data = await response.json();
-        return data[0];
+        return Array.isArray(data) && data.length > 0 ? data[0] : null;
     } catch (error) {
         console.error('Error fetching game details:', error);
         return null;
@@ -87,7 +88,7 @@ function initializeGameSearch() {
         }
 
         const games = await searchGames(query);
-        if (games.length === 0) {
+        if (!games || games.length === 0) {
             dropdown.style.display = 'none';
             return;
         }
