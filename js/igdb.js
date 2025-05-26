@@ -29,13 +29,17 @@ async function searchGames(query) {
         const response = await fetch('https://mnbtdwksrwhboyfrkxqf.supabase.co/functions/v1/igdb-proxy', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 query: `search "${query}"; fields name,cover.url,genres.name,platforms.name; limit 5;`
             })
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         return Array.isArray(data) ? data : [];
     } catch (error) {
@@ -50,13 +54,17 @@ async function getGameDetails(gameId) {
         const response = await fetch('https://mnbtdwksrwhboyfrkxqf.supabase.co/functions/v1/igdb-proxy', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 query: `where id = ${gameId}; fields name,cover.url,genres.name,platforms.name,summary;`
             })
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
         return Array.isArray(data) && data.length > 0 ? data[0] : null;
     } catch (error) {
@@ -87,21 +95,26 @@ function initializeGameSearch() {
             return;
         }
 
-        const games = await searchGames(query);
-        if (!games || games.length === 0) {
-            dropdown.style.display = 'none';
-            return;
-        }
+        try {
+            const games = await searchGames(query);
+            if (!games || games.length === 0) {
+                dropdown.style.display = 'none';
+                return;
+            }
 
-        dropdown.innerHTML = games.map(game => `
-            <div class="autocomplete-item" data-game-id="${game.id}">
-                <img src="${game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.url.split('/').pop()}` : 'placeholder.jpg'}" 
-                     alt="${game.name}" 
-                     style="width: 40px; height: 40px; object-fit: cover;">
-                <span>${game.name}</span>
-            </div>
-        `).join('');
-        dropdown.style.display = 'block';
+            dropdown.innerHTML = games.map(game => `
+                <div class="autocomplete-item" data-game-id="${game.id}">
+                    <img src="${game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.url.split('/').pop()}` : 'placeholder.jpg'}" 
+                         alt="${game.name}" 
+                         style="width: 40px; height: 40px; object-fit: cover;">
+                    <span>${game.name}</span>
+                </div>
+            `).join('');
+            dropdown.style.display = 'block';
+        } catch (error) {
+            console.error('Error in autocomplete:', error);
+            dropdown.style.display = 'none';
+        }
     });
 
     dropdown.addEventListener('click', async (e) => {
