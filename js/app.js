@@ -94,15 +94,19 @@ async function saveGame(gameData) {
 
 // Update statistics
 function updateStats() {
-    const total = games.length;
-    const completed = games.filter(g => g.status === 'completed').length;
-    const playing = games.filter(g => g.status === 'playing').length;
-    const owned = games.filter(g => g.status === 'owned').length;
+    try {
+        const total = games.length;
+        const completed = games.filter(g => g.status === 'completed').length;
+        const playing = games.filter(g => g.status === 'playing').length;
+        const owned = games.filter(g => g.status === 'owned').length;
 
-    document.getElementById('totalGames').textContent = total;
-    document.getElementById('completedGames').textContent = completed;
-    document.getElementById('currentlyPlaying').textContent = playing;
-    document.getElementById('ownedCount').textContent = owned;
+        document.getElementById('totalGames').textContent = total;
+        document.getElementById('completedGames').textContent = completed;
+        document.getElementById('currentlyPlaying').textContent = playing;
+        document.getElementById('ownedCount').textContent = owned;
+    } catch (error) {
+        console.error('Error updating stats:', error);
+    }
 }
 
 // Update platform filter options
@@ -201,9 +205,14 @@ async function deleteGame(id) {
             }
             
             console.log('Game deleted from Supabase');
+            // Update the games array
             games = games.filter(game => game.id !== id);
-            saveToLocalStorage(); // Update localStorage after deletion
-            updateDisplay();
+            // Update localStorage
+            saveToLocalStorage();
+            // Update the display
+            updateStats();
+            updatePlatformFilter();
+            filterGames();
         } catch (error) {
             console.error('Error in deleteGame:', error);
             alert('Failed to delete game. Please try again.');
@@ -213,9 +222,13 @@ async function deleteGame(id) {
 
 // Update entire display
 function updateDisplay() {
-    updateStats();
-    updatePlatformFilter();
-    filterGames();
+    try {
+        updateStats();
+        updatePlatformFilter();
+        filterGames();
+    } catch (error) {
+        console.error('Error updating display:', error);
+    }
 }
 
 // Initialize app when DOM is loaded
