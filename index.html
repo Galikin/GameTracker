@@ -337,24 +337,108 @@
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.39.0/supabase.min.js"></script>
     <script>
+        // Supabase configuration - Replace with your own values
+        const SUPABASE_URL = 'https://mnbtdwksrwhboyfrkxqf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYnRkd2tzcndoYm95ZnJreHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMjAzNDAsImV4cCI6MjA2Mzc5NjM0MH0.kdKVhO7N3ecPgu4nOakQ98J2hMHi1lGgP9rcII4DCH8';
+        
+        // Initialize Supabase client (will be null until you add your credentials)
+        let supabase = null;
+        
+        // Check if Supabase is configured
+        const isSupabaseConfigured = SUPABASE_URL !== 'https://mnbtdwksrwhboyfrkxqf.supabase.co' && SUPABASE_ANON_KEY !== 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYnRkd2tzcndoYm95ZnJreHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMjAzNDAsImV4cCI6MjA2Mzc5NjM0MH0.kdKVhO7N3ecPgu4nOakQ98J2hMHi1lGgP9rcII4DCH8';
+        
+        if (isSupabaseConfigured) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            console.log('Using local storage - add Supabase credentials for cloud sync');
+        }
+
         let games = [];
         let filteredGames = [];
 
-        // Load games from memory on page load
-        function loadGames() {
-            // In a real app, this would load from a database
-            // For now, games will persist only during the session
+        // Load games from database or localStorage
+        async function loadGames() {
+            if (isSupabaseConfigured) {
+                try {
+                    const { data, error } = await supabase
+                        .from('games')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+                    
+                    if (error) throw error;
+                    
+                    games = data || [];
+                    console.log('Loaded games from Supabase:', games.length);
+                } catch (error) {
+                    console.error('Error loading from Supabase:', error);
+                    loadFromLocalStorage();
+                }
+            } else {
+                loadFromLocalStorage();
+            }
             updateDisplay();
         }
 
+        // Fallback to localStorage
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem('gamingCollection');
+            games = saved ? JSON.parse(saved) : [];
+            console.log('Loaded games from localStorage:', games.length);
+        }
+
+        // Save to localStorage as backup
+        function saveToLocalStorage() {
+            localStorage.setItem('gamingCollection', JSON.stringify(games));
+        }
+
         // Save game to collection
-        function saveGame(gameData) {
-            games.push({
+        async function saveGame(gameData) {
+            const newGame = {
                 ...gameData,
                 id: Date.now(),
-                dateAdded: new Date().toLocaleDateString()
-            });
+                dateAdded: new Date().toLocaleDateString(),
+                created_at: new Date().toISOString()
+            };
+
+            if (isSupabaseConfigured) {
+                try {
+                    const { data, error } = await supabase
+                        .from('games')
+                        .insert([{
+                            title: newGame.title,
+                            platform: newGame.platform,
+                            genre: newGame.genre,
+                            status: newGame.status,
+                            rating: newGame.rating,
+                            hours_played: newGame.hoursPlayed,
+                            date_added: newGame.dateAdded,
+                            created_at: newGame.created_at
+                        }])
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    // Add the returned data to local array
+                    if (data && data[0]) {
+                        games.unshift({
+                            ...newGame,
+                            id: data[0].id
+                        });
+                    }
+                    console.log('Game saved to Supabase');
+                } catch (error) {
+                    console.error('Error saving to Supabase:', error);
+                    // Fallback to local storage
+                    games.unshift(newGame);
+                    saveToLocalStorage();
+                }
+            } else {
+                games.unshift(newGame);
+                saveToLocalStorage();
+            }
+            
             updateDisplay();
         }
 
@@ -452,9 +536,25 @@
         }
 
         // Delete game
-        function deleteGame(id) {
+        async function deleteGame(id) {
             if (confirm('Are you sure you want to delete this game?')) {
+                if (isSupabaseConfigured) {
+                    try {
+                        const { error } = await supabase
+                            .from('games')
+                            .delete()
+                            .eq('id', id);
+                        
+                        if (error) throw error;
+                        
+                        console.log('Game deleted from Supabase');
+                    } catch (error) {
+                        console.error('Error deleting from Supabase:', error);
+                    }
+                }
+                
                 games = games.filter(game => game.id !== id);
+                saveToLocalStorage(); // Always save to localStorage as backup
                 updateDisplay();
             }
         }
