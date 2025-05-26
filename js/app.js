@@ -58,6 +58,7 @@ async function saveGame(gameData) {
             rating: gameData.rating || null,
             hours_played: gameData.hoursPlayed || 0,
             cover_url: gameData.cover_url || null,
+            description: gameData.description || null, // Add description to newGame object
             date_added: new Date().toLocaleDateString(),
             created_at: new Date().toISOString()
         };
@@ -88,7 +89,8 @@ async function saveGame(gameData) {
             ...gameData,
             id: Date.now(),
             date_added: new Date().toLocaleDateString(),
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
+            description: gameData.description || null // Add description to localGame object
         };
         games.unshift(localGame);
         saveToLocalStorage();
@@ -193,6 +195,7 @@ function displayGames() {
                     <div class="info-value">${game.date_added}</div>
                 </div>
             </div>
+            ${game.description ? `<div class="game-description">${game.description}</div>` : ''}
             <button class="delete-btn" onclick="deleteGame(${game.id})">Delete</button>
         </div>
     `).join('');
@@ -238,12 +241,26 @@ document.addEventListener('DOMContentLoaded', () => {
             status: document.getElementById('status').value,
             rating: document.getElementById('rating').value || null,
             hoursPlayed: document.getElementById('hoursPlayed').value || 0,
-            cover_url: document.getElementById('gameTitle').dataset.coverUrl || null
+            cover_url: document.getElementById('gameTitle').dataset.coverUrl || null,
+            description: document.getElementById('gameTitle').dataset.gameSummary || null
         };
 
         saveGame(gameData);
         this.reset();
         document.getElementById('gameTitle').dataset.coverUrl = null;
+        document.getElementById('gameTitle').dataset.gameSummary = null; // Clear description dataset
+        document.getElementById('gameTitle').dataset.coverUrl = null;
+        document.getElementById('gameTitle').dataset.gameSummary = null; // Clear description dataset
+
+        // Display game description
+        const gameDescription = document.getElementById('gameTitle').dataset.gameSummary;
+        const gameDescriptionDisplay = document.getElementById('gameDescriptionDisplay');
+        if (gameDescription) {
+            gameDescriptionDisplay.textContent = gameDescription;
+            gameDescriptionDisplay.style.display = 'block';
+        } else {
+            gameDescriptionDisplay.style.display = 'none';
+        }
     });
 
     // Filter event listeners
@@ -251,6 +268,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('filterStatus').addEventListener('change', filterGames);
     document.getElementById('searchGames').addEventListener('input', filterGames);
 
-    // Load initial data
+   // Load initial data
     loadGames();
+
+    initializeGameSearch();
 });

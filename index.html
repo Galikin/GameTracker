@@ -39,6 +39,7 @@
                     <div class="form-group">
                         <label for="gameTitle">Game Title</label>
                         <input type="text" id="gameTitle" required>
+                        <div id="gameDescriptionDisplay" class="game-description-display" style="display: none;"></div>
                     </div>
                     <div class="form-group">
                         <label for="platform">Platform</label>
@@ -81,6 +82,8 @@
                     </div>
                 </div>
                 <button type="submit" class="btn">Add Game</button>
+            
+            <input type="text" id="searchGames" placeholder="Search games..." style="flex: 1; min-width: 200px; display: none;">
             </form>
         </div>
 
@@ -98,8 +101,6 @@
                 <option value="playing">Currently Playing</option>
                 <option value="completed">Completed</option>
             </select>
-
-            <input type="text" id="searchGames" placeholder="Search games..." style="flex: 1; min-width: 200px;">
         </div>
 
         <div id="gamesContainer" class="games-grid"></div>
@@ -111,5 +112,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/igdb.js"></script>
     <script src="js/app.js"></script>
+
 </body>
 </html>

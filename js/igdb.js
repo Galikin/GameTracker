@@ -33,7 +33,7 @@ async function searchGames(query) {
                 'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
-                query: `fields name,cover.url,genres.name,platforms.name; search "${query}"; limit 5;`
+                query: `fields name,cover.url,genres.name,platforms.name; search "${query}"; limit 20;`
             })
         });
         
@@ -90,33 +90,38 @@ function initializeGameSearch() {
     const dropdown = createAutocompleteDropdown();
     let selectedGame = null;
 
+    let timeoutId;
     gameTitleInput.addEventListener('input', async (e) => {
         const query = e.target.value;
-        if (query.length < 2) {
-            dropdown.style.display = 'none';
-            return;
-        }
-
-        try {
-            const games = await searchGames(query);
-            if (!games || games.length === 0) {
+        
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(async () => {
+            if (query.length < 2) {
                 dropdown.style.display = 'none';
                 return;
             }
 
-            dropdown.innerHTML = games.map(game => `
-                <div class="autocomplete-item" data-game-id="${game.id}">
-                    <img src="${game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.url.split('/').pop()}` : 'img/placeholder.jpg'}" 
-                         alt="${game.name}" 
-                         style="width: 40px; height: 40px; object-fit: cover;">
-                    <span>${game.name}</span>
-                </div>
-            `).join('');
-            dropdown.style.display = 'block';
-        } catch (error) {
-            console.error('Error in autocomplete:', error);
-            dropdown.style.display = 'none';
-        }
+            try {
+                const games = await searchGames(query);
+                if (!games || games.length === 0) {
+                    dropdown.style.display = 'none';
+                    return;
+                }
+
+                dropdown.innerHTML = games.map(game => `
+                    <div class="autocomplete-item" data-game-id="${game.id}">
+                        <img src="${game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.url.split('/').pop()}` : 'img/placeholder.jpg'}" 
+                             alt="${game.name}" 
+                             style="width: 40px; height: 40px; object-fit: cover;">
+                        <span>${game.name}</span>
+                    </div>
+                `).join('');
+                dropdown.style.display = 'block';
+            } catch (error) {
+                console.error('Error in autocomplete:', error);
+                dropdown.style.display = 'none';
+            }
+        }, 300);
     });
 
     dropdown.addEventListener('click', async (e) => {
@@ -139,6 +144,7 @@ function initializeGameSearch() {
             gameTitleInput.dataset.coverUrl = game.cover ? 
                 `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.url.split('/').pop()}` : 
                 null;
+            gameTitleInput.dataset.gameSummary = game.summary || null;
         }
     });
 
