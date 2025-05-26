@@ -95,7 +95,7 @@ function initializeGameSearch() {
 
         dropdown.innerHTML = games.map(game => `
             <div class="autocomplete-item" data-game-id="${game.id}">
-                <img src="${game.cover ? `https:${game.cover.url.replace('thumb', 'cover_small')}` : 'placeholder.jpg'}" 
+                <img src="${game.cover ? `https://images.igdb.com/igdb/image/upload/t_cover_small/${game.cover.url.split('/').pop()}` : 'placeholder.jpg'}" 
                      alt="${game.name}" 
                      style="width: 40px; height: 40px; object-fit: cover;">
                 <span>${game.name}</span>
@@ -120,8 +120,10 @@ function initializeGameSearch() {
                 document.getElementById('genre').value = game.genres.map(g => g.name).join(', ');
             }
 
-            // Store the cover URL in a data attribute
-            gameTitleInput.dataset.coverUrl = game.cover ? `https:${game.cover.url.replace('thumb', 'cover_big')}` : null;
+            // Store the cover URL in a data attribute with the correct image size
+            gameTitleInput.dataset.coverUrl = game.cover ? 
+                `https://images.igdb.com/igdb/image/upload/t_cover_big/${game.cover.url.split('/').pop()}` : 
+                null;
         }
     });
 

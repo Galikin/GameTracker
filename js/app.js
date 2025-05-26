@@ -25,7 +25,9 @@ async function loadGames() {
         console.log('Loaded games from Supabase:', games.length);
         
         // Update display after loading
-        updateDisplay();
+        updateStats();
+        updatePlatformFilter();
+        filterGames();
     } catch (error) {
         console.error('Error in loadGames:', error);
         // Fallback to localStorage
@@ -76,7 +78,9 @@ async function saveGame(gameData) {
         }
         
         // Update display after saving
-        updateDisplay();
+        updateStats();
+        updatePlatformFilter();
+        filterGames();
     } catch (error) {
         console.error('Error in saveGame:', error);
         // Fallback to local storage
@@ -88,7 +92,9 @@ async function saveGame(gameData) {
         };
         games.unshift(localGame);
         saveToLocalStorage();
-        updateDisplay();
+        updateStats();
+        updatePlatformFilter();
+        filterGames();
     }
 }
 
@@ -164,7 +170,9 @@ function displayGames() {
     container.innerHTML = filteredGames.map(game => `
         <div class="game-card">
             <div class="status-badge status-${game.status}">${game.status.charAt(0).toUpperCase() + game.status.slice(1)}</div>
-            ${game.cover_url ? `<img src="${game.cover_url}" alt="${game.title}" class="game-cover">` : ''}
+            ${game.cover_url ? 
+                `<img src="${game.cover_url}" alt="${game.title}" class="game-cover" onerror="this.src='placeholder.jpg'">` : 
+                '<img src="placeholder.jpg" alt="No cover" class="game-cover">'}
             <div class="platform-tag">${game.platform}</div>
             <div class="game-title">${game.title}</div>
             <div class="game-info">
@@ -205,11 +213,8 @@ async function deleteGame(id) {
             }
             
             console.log('Game deleted from Supabase');
-            // Update the games array
             games = games.filter(game => game.id !== id);
-            // Update localStorage
             saveToLocalStorage();
-            // Update the display
             updateStats();
             updatePlatformFilter();
             filterGames();
@@ -217,17 +222,6 @@ async function deleteGame(id) {
             console.error('Error in deleteGame:', error);
             alert('Failed to delete game. Please try again.');
         }
-    }
-}
-
-// Update entire display
-function updateDisplay() {
-    try {
-        updateStats();
-        updatePlatformFilter();
-        filterGames();
-    } catch (error) {
-        console.error('Error updating display:', error);
     }
 }
 
@@ -243,11 +237,13 @@ document.addEventListener('DOMContentLoaded', () => {
             genre: document.getElementById('genre').value,
             status: document.getElementById('status').value,
             rating: document.getElementById('rating').value || null,
-            hoursPlayed: document.getElementById('hoursPlayed').value || 0
+            hoursPlayed: document.getElementById('hoursPlayed').value || 0,
+            cover_url: document.getElementById('gameTitle').dataset.coverUrl || null
         };
 
         saveGame(gameData);
         this.reset();
+        document.getElementById('gameTitle').dataset.coverUrl = null;
     });
 
     // Filter event listeners
