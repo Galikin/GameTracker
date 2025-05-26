@@ -29,7 +29,8 @@ async function searchGames(query) {
         const response = await fetch('https://mnbtdwksrwhboyfrkxqf.supabase.co/functions/v1/igdb-proxy', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
                 query: `fields name,cover.url,genres.name,platforms.name; search "${query}"; limit 5;`
@@ -54,7 +55,8 @@ async function getGameDetails(gameId) {
         const response = await fetch('https://mnbtdwksrwhboyfrkxqf.supabase.co/functions/v1/igdb-proxy', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`
             },
             body: JSON.stringify({
                 query: `fields name,cover.url,genres.name,platforms.name,summary; where id = ${gameId};`

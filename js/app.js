@@ -1,9 +1,9 @@
 // Supabase configuration
-const SUPABASE_URL = 'https://mnbtdwksrwhboyfrkxqf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYnRkd2tzcndoYm95ZnJreHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMjAzNDAsImV4cCI6MjA2Mzc5NjM0MH0.kdKVhO7N3ecPgu4nOakQ98J2hMHi1lGgP9rcII4DCH8';
+window.SUPABASE_URL = 'https://mnbtdwksrwhboyfrkxqf.supabase.co';
+window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1uYnRkd2tzcndoYm95ZnJreHFmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgyMjAzNDAsImV4cCI6MjA2Mzc5NjM0MH0.kdKVhO7N3ecPgu4nOakQ98J2hMHi1lGgP9rcII4DCH8';
 
 // Initialize Supabase client
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabase = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
 let games = [];
 let filteredGames = [];
